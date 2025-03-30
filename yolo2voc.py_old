@@ -1,0 +1,132 @@
+from xml.dom.minidom import Document
+import os
+import os.path
+from PIL import Image
+
+ann_path = "/Users/label_result.txt"
+img_path = "/Users/"
+xml_path = "/Users/"
+
+if not os.path.exists(xml_path):
+    os.mkdir(xml_path)
+
+def writeXml(tmp, imgname,imgpath, w, h, label_list, wxml, attributes_list):
+    doc = Document()
+    #owner
+    annotation = doc.createElement('annotation')
+    doc.appendChild(annotation)
+    #owner
+    folder = doc.createElement('folder')
+    annotation.appendChild(folder)
+    folder_txt = doc.createTextNode("R_dataset")
+    folder.appendChild(folder_txt)
+
+    filename = doc.createElement('filename')
+    annotation.appendChild(filename)
+    filename_txt = doc.createTextNode(imgname)
+    filename.appendChild(filename_txt)
+
+    path = doc.createElement('path')
+    annotation.appendChild(path)
+    path_txt = doc.createTextNode(imgpath)
+    path.appendChild(path_txt)
+    #ones#
+    source = doc.createElement('source')
+    annotation.appendChild(source)
+
+    database = doc.createElement('database')
+    source.appendChild(database)
+    database_txt = doc.createTextNode("The R Database")
+    database.appendChild(database_txt)
+    #onee#
+    #twos#
+    size = doc.createElement('size')
+    annotation.appendChild(size)
+
+    width = doc.createElement('width')
+    size.appendChild(width)
+    width_txt = doc.createTextNode(str(w))
+    width.appendChild(width_txt)
+
+    height = doc.createElement('height')
+    size.appendChild(height)
+    height_txt = doc.createTextNode(str(h))
+    height.appendChild(height_txt)
+
+    depth = doc.createElement('depth')
+    size.appendChild(depth)
+    depth_txt = doc.createTextNode("3")
+    depth.appendChild(depth_txt)
+    #twoe#
+    segmented = doc.createElement('segmented')
+    annotation.appendChild(segmented)
+    segmented_txt = doc.createTextNode("0")
+    segmented.appendChild(segmented_txt)
+
+    # attributes
+    attributes = doc.createElement("attributes")
+    annotation.appendChild(attributes)
+
+    for i in range(0,len(attributes_list)):
+        #threes#
+        attr_new = doc.createElement(attributes_list[i])
+        attributes.appendChild(attr_new)
+        attr_new_txt = doc.createTextNode(label_list[i])
+        attr_new.appendChild(attr_new_txt)
+        #threee#
+    with open(wxml, "w") as f:
+        f.write(doc.toprettyxml(indent = '\t', encoding='utf-8')) 
+    f.close()
+
+    # tempfile = tmp + "test.xml"
+    # with open(tempfile, "w") as f:
+    #     f.write(doc.toprettyxml(indent = '\t', encoding='utf-8'))
+
+    # rewrite = open(tempfile, "r")
+    # lines = rewrite.read().split('\n')
+    # newlines = lines[1:len(lines)-1]
+
+    # fw = open(wxml, "w")
+    # for i in range(0, len(newlines)):
+    #     fw.write(newlines[i] + '\n')
+
+    # fw.close()
+    # rewrite.close()
+    # # os.remove(tempfile)
+    return
+
+attributes_list = [
+    'Female',
+    'AgeLess16',
+    'Age17-30',
+    'Age31-45',
+    'BodyFat',
+    'BodyNormal',
+    'BodyThin'  
+]
+
+# temp = "/Users/data/temp"
+# if not os.path.exists(temp):
+#    os.mkdir(temp)
+
+f = open(ann_path, 'r')
+txt_list = f.readlines()
+f.close()
+im_name_list = []
+
+for line in txt_list:
+    line = line.strip()
+    line_split = line.split(' ')
+    img_name = line_split[0].split('/')[-1]
+    im_name_list.append(img_name)
+    label_list = []
+    for j in range(1, len(line_split)):
+        label_list.append(line_split[j])
+    fileimgpath = os.path.join(img_path, img_name)
+    im=Image.open(fileimgpath)  
+    width= int(im.size[0])
+    height= int(im.size[1])
+    # print label_list
+    savename = os.path.join(xml_path , img_name.split('.')[0] + '.xml')
+    writeXml(temp, img_name,fileimgpath, width, height, label_list, savename,attributes_list)
+# os.rmdir(temp)

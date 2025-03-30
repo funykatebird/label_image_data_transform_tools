@@ -1,9 +1,3 @@
-#time:20210811
-#author:kaibofan
-#email:kbfan@gongsibao.com
-#description: voc/xml transform yolo format
-
-
 import os
 import xml.etree.ElementTree as ET
 
