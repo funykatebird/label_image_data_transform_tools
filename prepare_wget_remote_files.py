@@ -20,11 +20,6 @@ import wget
 import tqdm
 import subprocess
 
-from param import output
-
-from prepare_clip4videos import end_time
-
-
 def timer(func):
     def a(*args,**kwargs):
         start_time = time.time()
